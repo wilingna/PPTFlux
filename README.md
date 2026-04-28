@@ -4,7 +4,7 @@
 
 在一个网页里完成「资料理解 → 结构设计 → 表达升级 → 视觉呈现」的完整流程，不需要多工具切换，也不需要手动拼接内容。
 
-🔗 在线 demo：https://wilingna.github.io/pptflux/
+🔗 在线 demo：https://wilingna.github.io/PPTFlux/
 
 一句话理解
 
