@@ -146,10 +146,9 @@ wilingna ([@wilingna](https://github.com/wilingna))，大厂HR出身的AI System
 
 我的其他项目：
 
-- [ai-ppt-toolkit](https://github.com/wilingna/ai-ppt-toolkit) — AI 做 PPT 三件套工作流（49 ⭐）
-- [ai-ppt-web](https://github.com/wilingna/ai-ppt-web) — 三件套的网页版升级（13 ⭐）
-- [ai-decision-5steps](https://github.com/wilingna/ai-decision-5steps) — 用 5 个 AI 工具做高质量决策（17 ⭐）
+- [ai-ppt-toolkit](https://github.com/wilingna/ai-ppt-toolkit) — AI 做 PPT 三件套工作流
+- [ai-ppt-web](https://github.com/wilingna/ai-ppt-web) — 三件套的网页版升级
+- [ai-decision-5steps](https://github.com/wilingna/ai-decision-5steps) — 用 5 个 AI 工具做高质量决策
 - [ai-content-pipeline](https://github.com/wilingna/ai-content-pipeline) — 7 个 Agent 自动跑内容生产线
-- [zengen.art](https://zengen.art) — 中国神话美学剪纸 DIY 出海
 
 如果这个项目对你有启发，欢迎点个 ⭐ Star，这是对超级个体创作者最直接的支持。
