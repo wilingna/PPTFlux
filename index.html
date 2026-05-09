@@ -749,6 +749,7 @@ body::before {
         <button class="act-btn" id="copy-btn" onclick="copyContent()" disabled>复制内容</button>
         <button class="act-btn" id="print-btn" onclick="printCurrentSlides()" disabled title="打印/导出 PDF (A4 横向)">打印 PDF</button>
         <button class="act-btn gold" id="dl-btn" onclick="downloadHtml()" disabled>下载 HTML ↓</button>
+        <button class="act-btn" id="share-btn" onclick="shareDeck()" disabled title="生成可分享的公网链接,30 天有效">分享 ↗</button>
       </div>
     </div>
 
@@ -3440,6 +3441,7 @@ ${absNum===1?`字体（仅第一页加）：<link href="${cfg.fontUrl}" rel="sty
     document.getElementById('dl-btn').disabled = false;
     document.getElementById('copy-btn').disabled = false;
     document.getElementById('print-btn').disabled = false;
+    document.getElementById('share-btn').disabled = false;
     setAgentStatus(4, 'done'); updateS4List(5);
   }
 
@@ -3466,6 +3468,76 @@ function downloadHtml() {
   a.download = `${topic.replace(/[\s\/\\:*?"<>|]/g, '-')}-slides.html`;
   a.click();
   URL.revokeObjectURL(a.href);
+}
+
+const SHARE_ENDPOINT = 'https://pptflux-share.wiling1002.workers.dev/upload';
+
+async function shareDeck() {
+  if (!htmlOutput) return;
+
+  const btn = document.getElementById('share-btn');
+  const orig = btn.textContent;
+  btn.textContent = '生成中...';
+  btn.disabled = true;
+
+  try {
+    const taggedHtml = htmlOutput.replace(
+      '</head>',
+      `<meta name="generator" content="PPTFlux"><meta name="shared-at" content="${new Date().toISOString()}"></head>`
+    );
+
+    const payload = {
+      html: taggedHtml,
+      user_id: localStorage.getItem('pptflux_user_id') || 'anon',
+      tier: localStorage.getItem('pptflux_tier') || 'free',
+    };
+
+    const res = await fetch(SHARE_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || `HTTP ${res.status}`);
+    }
+    const { url, expires } = await res.json();
+
+    await navigator.clipboard.writeText(url);
+    showShareToast(url, expires);
+
+    btn.textContent = '已复制 OK';
+    setTimeout(() => { btn.textContent = orig; btn.disabled = false; }, 2500);
+  } catch (e) {
+    console.error('Share failed:', e);
+    btn.textContent = '失败,重试';
+    setTimeout(() => { btn.textContent = orig; btn.disabled = false; }, 2000);
+  }
+}
+
+function showShareToast(url, expires) {
+  const toast = document.createElement('div');
+  toast.style.cssText = `
+    position: fixed; top: 70px; right: 28px; z-index: 999;
+    background: var(--s2); border: 1px solid var(--gold);
+    padding: 14px 18px; border-radius: 12px;
+    font-family: 'DM Sans', sans-serif; font-size: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    max-width: 320px;
+  `;
+  const expText = expires
+    ? `有效期至 ${new Date(expires).toLocaleDateString('zh-CN')}`
+    : '永久有效';
+  toast.innerHTML = `
+    <div style="color:var(--gold2);font-weight:500;margin-bottom:6px">分享链接已复制</div>
+    <div style="font-family:monospace;color:var(--tx);font-size:11px;
+                background:var(--ink);padding:6px 10px;border-radius:6px;
+                margin-bottom:8px;word-break:break-all">${url}</div>
+    <div style="color:var(--tx3);font-size:10px">${expText}</div>
+  `;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 5000);
 }
 
 function printCurrentSlides() {
